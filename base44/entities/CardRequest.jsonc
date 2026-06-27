@@ -1,0 +1,78 @@
+{
+  "name": "CardRequest",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string"
+    },
+    "account_number": {
+      "type": "string"
+    },
+    "phone_number": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "card_type": {
+      "type": "string",
+      "enum": [
+        "Visa Debit",
+        "Mastercard Debit",
+        "Visa Credit",
+        "Mastercard Credit",
+        "Verve"
+      ]
+    },
+    "branch": {
+      "type": "string"
+    },
+    "service_type": {
+      "type": "string",
+      "enum": [
+        "Issue New Card",
+        "Replace Card",
+        "Re-Issue Card",
+        "PIN Change",
+        "Balance Inquiry"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "issued",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "id_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "fingerprint_captured": {
+      "type": "boolean",
+      "default": false
+    },
+    "signature_captured": {
+      "type": "boolean",
+      "default": false
+    },
+    "card_last_four": {
+      "type": "string"
+    },
+    "failure_reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "full_name",
+    "account_number",
+    "phone_number",
+    "service_type",
+    "card_type",
+    "branch"
+  ]
+}
