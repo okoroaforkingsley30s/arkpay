@@ -6,7 +6,6 @@ import {
   CreditCard,
   Landmark,
   ShieldCheck,
-  Wifi,
 } from "lucide-react";
 
 import KioskLayout from "@/components/layout/KioskLayout";
@@ -14,6 +13,7 @@ import GlassCard from "@/components/common/GlassCard";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
+import BankCardPreview from "@/components/card/BankCardPreview";
 
 const cardProducts = [
   {
@@ -54,7 +54,9 @@ export default function CardPreview() {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleContinue = () => {
-    navigate("/processing", {
+    if (!selectedProduct) return;
+
+    navigate("/card-personalization", {
       state: {
         ...formData,
         card_product_id: selectedProduct.id,
@@ -149,54 +151,19 @@ export default function CardPreview() {
             icon={ShieldCheck}
           >
             <div className="min-h-[460px] flex flex-col items-center justify-center">
-              <div className="w-full max-w-md h-64 rounded-3xl bg-gradient-to-br from-[#071321] via-[#0A2540] to-[#123B67] p-7 shadow-2xl border border-blue-400/20 relative overflow-hidden">
-                <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-blue-400/10" />
-                <div className="absolute -bottom-24 -left-24 w-64 h-64 rounded-full bg-white/5" />
-
-                <div className="relative z-10 flex items-start justify-between">
-                  <div>
-                    <p className="text-white/90 text-sm font-bold">
-                      ArkPay Bank
-                    </p>
-                    <p className="text-blue-300 text-xs uppercase tracking-widest mt-1">
-                      {selectedProduct?.name || "Select Card Product"}
-                    </p>
-                  </div>
-
-                  <Wifi className="w-6 h-6 text-white/60 rotate-90" />
-                </div>
-
-                <div className="relative z-10 mt-12 flex items-center gap-4">
-                  <div className="w-14 h-10 rounded-lg bg-gradient-to-br from-yellow-300 to-yellow-600" />
-                  <p className="text-white text-xl font-mono tracking-widest">
-                    5399 •••• •••• 7821
-                  </p>
-                </div>
-
-                <div className="relative z-10 mt-12 flex items-end justify-between">
-                  <div>
-                    <p className="text-blue-300/70 text-[10px] uppercase tracking-widest">
-                      Card Holder
-                    </p>
-                    <p className="text-white font-bold text-sm tracking-wide">
-                      {formData.full_name?.toUpperCase() || "CARD HOLDER"}
-                    </p>
-                  </div>
-
-                  <div className="text-right">
-                    <p className="text-blue-300/70 text-[10px] uppercase tracking-widest">
-                      Network
-                    </p>
-                    <p className="text-white font-black text-sm">
-                      {selectedProduct?.network || "—"}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <BankCardPreview
+                cardType={selectedProduct?.name || "Select Card Product"}
+                cardNetwork={selectedProduct?.network || "VISA"}
+                nameOnCard={
+                  formData.full_name?.toUpperCase() ||
+                  formData.customer_profile?.full_name?.toUpperCase() ||
+                  "CARD HOLDER"
+                }
+              />
 
               <p className="text-blue-300 text-center mt-8 max-w-sm">
                 {selectedProduct
-                  ? `${selectedProduct.name} is ready for preview and personalization.`
+                  ? `${selectedProduct.name} is ready for personalization.`
                   : "Select a card product to continue."}
               </p>
             </div>
@@ -209,7 +176,7 @@ export default function CardPreview() {
             disabled={!selectedProduct}
             onClick={handleContinue}
           >
-            Continue to Processing
+            Continue to Card Personalization
           </PrimaryButton>
         </div>
       </div>

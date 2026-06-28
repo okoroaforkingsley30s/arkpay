@@ -17,28 +17,28 @@ import StatusBadge from "@/components/common/StatusBadge";
 
 const steps = [
   {
-    label: "Initializing Seaory S21 printer",
+    label: "Initializing Printer",
     note: "Preparing card personalization device.",
     icon: Printer,
   },
   {
-    label: "Loading blank card",
-    note: "Checking card hopper and blank card availability.",
+    label: "Loading Blank Card",
+    note: "Loading a blank card into the printer.",
     icon: CreditCard,
   },
   {
-    label: "Encoding chip data",
-    note: "Writing card personalization data placeholder.",
+    label: "Encoding Chip",
+    note: "Writing personalization data to the chip.",
     icon: Cpu,
   },
   {
-    label: "Printing card surface",
-    note: "Applying customer and card product details.",
+    label: "Printing Card",
+    note: "Printing customer information on the card.",
     icon: Printer,
   },
   {
-    label: "Verifying card output",
-    note: "Confirming card personalization result.",
+    label: "Verifying Card",
+    note: "Performing final quality verification.",
     icon: ShieldCheck,
   },
 ];
@@ -95,7 +95,10 @@ export default function Processing() {
         <div className="flex flex-wrap gap-3">
           <StatusBadge status="success" label="Identity Verified" />
           <StatusBadge status="success" label="Signature Captured" />
-          <StatusBadge status="success" label={formData.card_type || "Card Product Selected"} />
+          <StatusBadge
+            status="success"
+            label={formData.card_type || "Card Product Selected"}
+          />
           <StatusBadge
             status={completed ? "warning" : "pending"}
             label={completed ? "SDK Placeholder Mode" : "Processing"}

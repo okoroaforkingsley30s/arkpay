@@ -2,18 +2,40 @@ import React from "react";
 
 const fingerTargets = {
   left: [
-    { id: "left-thumb", label: "Thumb", fullName: "Left Thumb", cx: 76, cy: 235 },
-    { id: "left-index", label: "Index", fullName: "Left Index", cx: 145, cy: 92 },
-    { id: "left-middle", label: "Middle", fullName: "Left Middle", cx: 205, cy: 65 },
-    { id: "left-ring", label: "Ring", fullName: "Left Ring", cx: 265, cy: 100 },
-    { id: "left-little", label: "Little", fullName: "Left Little", cx: 320, cy: 170 },
+    { id: "left-thumb", label: "Thumb", fullName: "Left Thumb", cx: 70, cy: 246 },
+    { id: "left-index", label: "Index", fullName: "Left Index", cx: 145, cy: 118 },
+    { id: "left-middle", label: "Middle", fullName: "Left Middle", cx: 198, cy: 82 },
+    { id: "left-ring", label: "Ring", fullName: "Left Ring", cx: 252, cy: 118 },
+    { id: "left-little", label: "Little", fullName: "Left Little", cx: 305, cy: 190 },
   ],
   right: [
-    { id: "right-little", label: "Little", fullName: "Right Little", cx: 70, cy: 170 },
-    { id: "right-ring", label: "Ring", fullName: "Right Ring", cx: 125, cy: 100 },
-    { id: "right-middle", label: "Middle", fullName: "Right Middle", cx: 185, cy: 65 },
-    { id: "right-index", label: "Index", fullName: "Right Index", cx: 245, cy: 92 },
-    { id: "right-thumb", label: "Thumb", fullName: "Right Thumb", cx: 314, cy: 235 },
+    { id: "right-little", label: "Little", fullName: "Right Little", cx: 85, cy: 190 },
+    { id: "right-ring", label: "Ring", fullName: "Right Ring", cx: 138, cy: 118 },
+    { id: "right-middle", label: "Middle", fullName: "Right Middle", cx: 192, cy: 82 },
+    { id: "right-index", label: "Index", fullName: "Right Index", cx: 245, cy: 118 },
+    { id: "right-thumb", label: "Thumb", fullName: "Right Thumb", cx: 320, cy: 246 },
+  ],
+};
+
+const handPaths = {
+  left:
+    "M 190 360 C 142 360 106 328 104 282 L 101 238 C 100 221 114 214 128 225 L 141 244 L 141 143 C 141 126 163 124 167 141 L 170 205 L 180 102 C 183 82 209 82 212 102 L 212 205 L 224 143 C 228 124 251 126 251 145 L 244 214 L 260 173 C 267 157 289 160 290 179 C 292 209 279 243 266 273 C 254 301 250 324 248 343 C 246 356 223 360 190 360 Z",
+  right:
+    "M 200 360 C 248 360 284 328 286 282 L 289 238 C 290 221 276 214 262 225 L 249 244 L 249 143 C 249 126 227 124 223 141 L 220 205 L 210 102 C 207 82 181 82 178 102 L 178 205 L 166 143 C 162 124 139 126 139 145 L 146 214 L 130 173 C 123 157 101 160 100 179 C 98 209 111 243 124 273 C 136 301 140 324 142 343 C 144 356 167 360 200 360 Z",
+};
+
+const palmLines = {
+  left: [
+    "M 126 282 C 146 315 173 330 204 328",
+    "M 143 246 C 154 264 160 285 159 306",
+    "M 176 218 C 185 245 188 275 184 310",
+    "M 221 220 C 215 248 214 280 220 312",
+  ],
+  right: [
+    "M 264 282 C 244 315 217 330 186 328",
+    "M 247 246 C 236 264 230 285 231 306",
+    "M 214 218 C 205 245 202 275 206 310",
+    "M 169 220 C 175 248 176 280 170 312",
   ],
 };
 
@@ -23,78 +45,67 @@ export default function InteractiveHand({
   onSelect,
   disabled = false,
 }) {
-  const isRight = hand === "right";
   const fingers = fingerTargets[hand];
+  const path = handPaths[hand];
+  const lines = palmLines[hand];
 
   return (
     <div className="relative w-full max-w-[390px] mx-auto">
       <svg
         viewBox="0 0 390 430"
-        className="w-full h-auto drop-shadow-2xl"
+        className="w-full h-auto"
         role="img"
         aria-label={`${hand} hand fingerprint selector`}
       >
         <defs>
-          <linearGradient id={`handSkin-${hand}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#e0a06a" />
-            <stop offset="45%" stopColor="#b96a36" />
-            <stop offset="100%" stopColor="#6f3517" />
-          </linearGradient>
-
-          <linearGradient id={`fingerSkin-${hand}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#e9aa73" />
-            <stop offset="50%" stopColor="#bf7139" />
-            <stop offset="100%" stopColor="#7a3d1b" />
-          </linearGradient>
-
-          <filter id={`softShadow-${hand}`} x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="12" stdDeviation="10" floodColor="#000000" floodOpacity="0.35" />
+          <filter id={`blueGlow-${hand}`} x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow
+              dx="0"
+              dy="0"
+              stdDeviation="4"
+              floodColor="#3b82f6"
+              floodOpacity="0.6"
+            />
           </filter>
         </defs>
 
-        <g filter={`url(#softShadow-${hand})`}>
+        <path
+          d={path}
+          fill="#071b34"
+          fillOpacity="0.65"
+          stroke="#3b82f6"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          filter={`url(#blueGlow-${hand})`}
+        />
+
+        {lines.map((line) => (
           <path
-            d={
-              isRight
-                ? "M145 385 C105 365 82 330 81 286 L80 236 C79 216 100 205 117 219 L120 132 C121 105 153 103 158 130 L162 91 C166 59 202 59 207 91 L211 129 C216 102 248 105 251 132 L254 217 L274 174 C283 152 312 160 313 185 C315 215 300 252 287 280 C276 304 272 330 270 352 C266 384 207 407 145 385 Z"
-                : "M245 385 C285 365 308 330 309 286 L310 236 C311 216 290 205 273 219 L270 132 C269 105 237 103 232 130 L228 91 C224 59 188 59 183 91 L179 129 C174 102 142 105 139 132 L136 217 L116 174 C107 152 78 160 77 185 C75 215 90 252 103 280 C114 304 118 330 120 352 C124 384 183 407 245 385 Z"
-            }
-            fill={`url(#handSkin-${hand})`}
-            stroke="#f1b37c"
+            key={line}
+            d={line}
+            fill="none"
+            stroke="#60a5fa"
             strokeOpacity="0.35"
             strokeWidth="3"
+            strokeLinecap="round"
           />
-
-          <path
-            d={
-              isRight
-                ? "M113 293 C130 323 158 339 194 338 C231 337 259 320 277 290"
-                : "M277 293 C260 323 232 339 196 338 C159 337 131 320 113 290"
-            }
-            fill="none"
-            stroke="#ffd0a3"
-            strokeOpacity="0.18"
-            strokeWidth="4"
-          />
-
-          <path
-            d={
-              isRight
-                ? "M158 131 C169 149 174 176 174 216 M207 92 C213 131 214 172 213 218 M251 133 C252 161 250 191 248 221"
-                : "M232 131 C221 149 216 176 216 216 M183 92 C177 131 176 172 177 218 M139 133 C138 161 140 191 142 221"
-            }
-            fill="none"
-            stroke="#6f3517"
-            strokeOpacity="0.18"
-            strokeWidth="3"
-          />
-        </g>
+        ))}
 
         {fingers.map((finger) => {
           const isSelected = selectedFinger?.id === finger.id;
+          const isDisabled = disabled && !isSelected;
 
           return (
-            <g key={finger.id}>
+            <g
+              key={finger.id}
+              opacity={isDisabled ? "0.35" : "1"}
+              style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
+              onClick={() => {
+                if (isDisabled) return;
+                onSelect(finger);
+              }}
+            >
               <text
                 x={finger.cx}
                 y={finger.cy - 34}
@@ -109,30 +120,14 @@ export default function InteractiveHand({
               <circle
                 cx={finger.cx}
                 cy={finger.cy}
-                r={21}
+                r={23}
                 fill={isSelected ? "#2563eb" : "#06254a"}
                 stroke={isSelected ? "#bfdbfe" : "#60a5fa"}
                 strokeWidth="4"
-                opacity={disabled && !isSelected ? "0.35" : "1"}
-                style={{ cursor: disabled && !isSelected ? "not-allowed" : "pointer" }}
-                onClick={() => {
-                  if (disabled && !isSelected) return;
-                  onSelect(finger);
-                }}
+                filter={isSelected ? `url(#blueGlow-${hand})` : undefined}
               />
 
-              <circle
-                cx={finger.cx}
-                cy={finger.cy}
-                r={6}
-                fill="#ffffff"
-                opacity={disabled && !isSelected ? "0.35" : "1"}
-                style={{ cursor: disabled && !isSelected ? "not-allowed" : "pointer" }}
-                onClick={() => {
-                  if (disabled && !isSelected) return;
-                  onSelect(finger);
-                }}
-              />
+              <circle cx={finger.cx} cy={finger.cy} r={7} fill="#ffffff" />
             </g>
           );
         })}

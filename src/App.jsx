@@ -14,7 +14,9 @@ import CustomerDetails from "@/pages/CustomerDetails";
 import IdVerification from "@/pages/IdVerification";
 import FingerprintCapture from "@/pages/FingerprintCapture";
 import SignatureCapture from "@/pages/SignatureCapture";
+import CardPersonalization from "@/pages/CardPersonalization";
 import CardPreview from "@/pages/CardPreview";
+import FinalCardPreview from "@/pages/FinalCardPreview";
 import Processing from "@/pages/Processing";
 import Success from "@/pages/Success";
 import Receipt from "@/pages/Receipt";
@@ -40,6 +42,8 @@ function App() {
             <Route path="/id-verification" element={<IdVerification />} />
             <Route path="/fingerprint" element={<FingerprintCapture />} />
             <Route path="/signature" element={<SignatureCapture />} />
+            <Route path="/card-personalization" element={<CardPersonalization />} />
+            <Route path="/final-card-preview" element={<FinalCardPreview />} />
             <Route path="/card-preview" element={<CardPreview />} />
             <Route path="/processing" element={<Processing />} />
             <Route path="/success" element={<Success />} />
