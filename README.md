@@ -1,77 +1,125 @@
-# Base44 Project
+# ArkPay
 
-Use this repository to run and edit the app locally, then publish changes back through Base44.
+**Enterprise Card Personalization & Instant Card Issuance Platform**
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+ArkPay is an enterprise-grade platform for instant card issuance and card personalization, designed for banks, fintechs and financial institutions.
 
-## Prerequisites
+It enables organizations to securely issue new cards, replace existing cards, personalize EMV cards and manage kiosk-based card issuance through a modern, scalable software platform.
 
-1. Clone the repository using the project's Git URL.
-2. Navigate to the project directory.
-3. Install dependencies: `npm install`.
-4. Install the Base44 CLI: `npm install -g base44@latest`.
+---
 
-See the [Base44 CLI docs](https://docs.base44.com/developers/references/cli/get-started/overview) if you want to run Base44 commands directly.
+# Vision
 
-## Run Locally
+To provide financial institutions with a secure, flexible and scalable card personalization platform that integrates seamlessly with existing banking infrastructure while delivering a fast and intuitive customer experience.
 
-Run the full local development environment from the project root:
+---
 
-```bash
-base44 dev
+# Core Features
+
+* Instant Card Issuance
+* Card Replacement
+* Card Personalization
+* Customer Verification Workflow
+* Card Preview
+* Receipt Generation
+* Device Monitoring
+* Audit Logging
+* Administrator Dashboard
+* Multi-Institution Configuration
+
+---
+
+# Planned Integrations
+
+ArkPay is designed to integrate with:
+
+* Core Banking Systems
+* Card Management Systems (CMS)
+* Hardware Security Modules (HSM)
+* Customer Verification Services
+* Bank APIs
+* Card Printers
+* Smart Card Readers
+* Fingerprint Scanners
+* Signature Pads
+* PIN Pads
+* Barcode Scanners
+
+---
+
+# Platform Architecture
+
+ArkPay follows a modular architecture built around reusable components and configurable workflows.
+
+Current project structure:
+
+```text
+src/
+├── components/
+├── config/
+├── constants/
+├── contexts/
+├── pages/
+├── services/
+└── ...
 ```
 
-`base44 dev` starts the local Base44 development backend and, when this app is configured for it, also starts the frontend dev server for you. Use the frontend URL printed by the command.
+The project emphasizes maintainability, scalability and clean separation of responsibilities.
 
-For example, when the Base44 project config includes a `serveCommand`, `base44 dev` can launch the frontend too:
+---
 
-```json5
-{
-  "site": {
-    "serveCommand": "npm run dev"
-  }
-}
-```
+# Current Development Status
 
-In a Base44 project this lives in `base44/config.jsonc`.
+Current Phase:
 
-## Run Only The Frontend
+**Foundation**
 
-If you only want to work on the frontend against the hosted Base44 backend, run:
+The current objective is to complete one end-to-end card issuance workflow before expanding into advanced integrations and cloud services.
 
-```bash
-npm run dev
-```
+---
 
-Open the local URL printed by Vite.
+# Technology Stack
 
-## Use The Hosted Backend
+* React
+* Vite
+* JavaScript
+* Tailwind CSS
+* Framer Motion
+* React Router
+* TanStack Query
 
-For frontend-only development, create or update `.env.local` in the project root:
+Future integrations will include hardware SDKs and banking APIs.
 
-```bash
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=https://your-app.base44.app
-```
+---
 
-`VITE_BASE44_APP_ID` identifies the Base44 app.
+# Documentation
 
-`VITE_BASE44_APP_BASE_URL` tells the Base44 Vite plugin where to send local `/api` requests. Point it at your deployed Base44 app URL when you want the local frontend to use the hosted backend.
+Project documentation is maintained in the following files:
 
-When you use `base44 dev`, the command injects the local Base44 values for you, so `.env.local` is mainly needed for frontend-only workflows.
+* `ARKPAY.md` — Project vision, philosophy and engineering rules
+* `ARCHITECTURE.md` — Technical architecture and project structure
+* `ROADMAP.md` — Planned milestones and future releases
+* `DECISIONS.md` — Key engineering and product decisions
+* `CHANGELOG.md` — Development history and release notes
 
-## Publish Your Changes
+---
 
-After pushing your changes to git, open the Base44 dashboard and publish the app:
+# Development Principles
 
-```bash
-base44 dashboard open
-```
+* Build working software before expanding architecture.
+* Keep the codebase simple, clean and maintainable.
+* Every new file must solve a real business problem.
+* Complete one feature before starting another.
+* Every feature must successfully build before being committed.
 
-## Docs & Support
+---
 
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
+# Repository
 
-Base44 CLI command reference: [https://docs.base44.com/developers/references/cli/commands/introduction](https://docs.base44.com/developers/references/cli/commands/introduction)
+Owner: **Nexora Lab**
 
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+Lead Architect: **Kingsley Okoroafor**
+
+Status: **Active Development**
+
+Version: **Foundation v0.1**
