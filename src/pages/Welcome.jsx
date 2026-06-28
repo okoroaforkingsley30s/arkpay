@@ -1,6 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { CreditCard, ChevronRight, ShieldCheck, Timer, Building2 } from "lucide-react";
+import {
+  Building2,
+  ChevronRight,
+  CreditCard,
+  ShieldCheck,
+  Timer,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 import KioskLayout from "@/components/layout/KioskLayout";
@@ -8,12 +14,15 @@ import GlassCard from "@/components/common/GlassCard";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 export default function Welcome() {
   const navigate = useNavigate();
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+      <VoiceGuide message="Welcome to ArkPay. Touch the screen to start." />
+
       <div className="min-h-[430px] flex items-center justify-center">
         <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8 items-center">
           <div>

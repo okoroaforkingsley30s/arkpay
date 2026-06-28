@@ -1,12 +1,13 @@
 import React, { useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CreditCard, Home, Printer, ShieldCheck } from "lucide-react";
+import { CreditCard, Home, ShieldCheck } from "lucide-react";
 
 import KioskLayout from "@/components/layout/KioskLayout";
 import GlassCard from "@/components/common/GlassCard";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 export default function Receipt() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function Receipt() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+    <VoiceGuide message="Your transaction is complete. You may review your receipt on the screen. Press finish to return to the welcome screen." />
       <div className="max-w-5xl mx-auto space-y-7">
         <SectionTitle
           icon={ShieldCheck}
@@ -117,8 +119,8 @@ export default function Receipt() {
 
           <GlassCard
             title="Next Action"
-            subtitle="Receipt printing will be connected when the receipt printer SDK is available."
-            icon={Printer}
+            subtitle="Review the transaction summary and return to the welcome screen."
+            icon={ShieldCheck}
           >
             <div className="min-h-[520px] flex flex-col items-center justify-center text-center">
               <div className="w-44 h-44 rounded-full bg-green-500/10 border border-green-500/40 flex items-center justify-center mb-8">
@@ -142,15 +144,6 @@ export default function Receipt() {
 >
   Finish — Return Home
 </PrimaryButton>
-
-                <PrimaryButton
-                  fullWidth
-                  variant="secondary"
-                  icon={Home}
-                  onClick={() => navigate("/")}
-                >
-                  Return Home
-                </PrimaryButton>
               </div>
             </div>
           </GlassCard>

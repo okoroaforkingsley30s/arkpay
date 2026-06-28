@@ -18,13 +18,13 @@ import CardPersonalization from "@/pages/CardPersonalization";
 import CardPreview from "@/pages/CardPreview";
 import FinalCardPreview from "@/pages/FinalCardPreview";
 import Processing from "@/pages/Processing";
-import Success from "@/pages/Success";
+import CollectCard from "@/pages/CollectCard";
 import Receipt from "@/pages/Receipt";
+
 import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import EmbossFileUpload from "@/pages/EmbossFileUpload";
 import CardRequestQueue from "@/pages/CardRequestQueue";
-import CollectCard from "@/pages/CollectCard";
 import InstitutionSetup from "@/pages/InstitutionSetup";
 import DeviceTest from "@/pages/DeviceTest";
 import AuditLogs from "@/pages/AuditLogs";
@@ -43,11 +43,16 @@ function App() {
             <Route path="/id-verification" element={<IdVerification />} />
             <Route path="/fingerprint" element={<FingerprintCapture />} />
             <Route path="/signature" element={<SignatureCapture />} />
-            <Route path="/card-personalization" element={<CardPersonalization />} />
-            <Route path="/final-card-preview" element={<FinalCardPreview />} />
             <Route path="/card-preview" element={<CardPreview />} />
+            <Route
+              path="/card-personalization"
+              element={<CardPersonalization />}
+            />
+            <Route
+              path="/final-card-preview"
+              element={<FinalCardPreview />}
+            />
             <Route path="/processing" element={<Processing />} />
-            <Route path="/success" element={<Success />} />
             <Route path="/collect-card" element={<CollectCard />} />
             <Route path="/receipt" element={<Receipt />} />
 

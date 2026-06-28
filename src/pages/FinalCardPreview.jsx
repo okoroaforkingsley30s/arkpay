@@ -17,6 +17,7 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import BankCardPreview from "@/components/card/BankCardPreview";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 export default function FinalCardPreview() {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ export default function FinalCardPreview() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+    <VoiceGuide message="This is your final card preview. Please review your customer details and card information carefully. Confirm both check boxes before personalizing the card." />
       <div className="space-y-7">
         <div className="flex items-start justify-between gap-5">
           <SectionTitle

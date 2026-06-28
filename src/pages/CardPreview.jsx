@@ -15,6 +15,7 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import BankCardPreview from "@/components/card/BankCardPreview";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 const fallbackCardProducts = [
   {
@@ -116,6 +117,7 @@ export default function CardPreview() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+    <VoiceGuide message="Please select one eligible card product for this customer. Only bank approved cards can be selected." />
       <div className="space-y-7">
         <div className="flex items-start justify-between gap-5">
           <SectionTitle

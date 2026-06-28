@@ -16,6 +16,7 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import InteractiveHand from "@/components/biometric/InteractiveHand";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 const workflowSteps = [
   "Service",
@@ -78,6 +79,7 @@ export default function IdVerification() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+    <VoiceGuide message="Fingerprint verification. Please select the finger requested by the bank. After selecting a finger, place it on the fingerprint scanner and wait for verification." />
       <div className="space-y-7">
         <div className="flex items-start justify-between gap-5">
           <SectionTitle

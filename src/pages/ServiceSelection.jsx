@@ -16,6 +16,7 @@ import GlassCard from "@/components/common/GlassCard";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 const services = [
   {
@@ -81,6 +82,8 @@ export default function ServiceSelection() {
 
   return (
     <KioskLayout showInstitution showDevices>
+      <VoiceGuide message="Please select the service you would like to perform on this kiosk." />
+
       <div className="space-y-8">
         <SectionTitle
           icon={CreditCard}

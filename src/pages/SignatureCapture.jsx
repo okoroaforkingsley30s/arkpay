@@ -7,6 +7,7 @@ import GlassCard from "@/components/common/GlassCard";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 export default function SignatureCapture() {
   const navigate = useNavigate();
@@ -81,6 +82,7 @@ export default function SignatureCapture() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+    <VoiceGuide message="Please sign inside the signature box using the signature pen or touchscreen. Press continue when your signature is captured." />
       <div className="space-y-7">
         <div className="flex items-start justify-between gap-5">
           <SectionTitle

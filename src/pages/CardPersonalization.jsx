@@ -15,6 +15,7 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import BankCardPreview from "@/components/card/BankCardPreview";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 const fallbackThemes = [
   {
@@ -146,6 +147,7 @@ export default function CardPersonalization() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+    <VoiceGuide message="Please select the approved name that will appear on your card. Next, choose the approved card artwork. When you are satisfied, continue to the final preview." />
       <div className="space-y-7">
         <div className="flex items-start justify-between gap-5">
           <SectionTitle

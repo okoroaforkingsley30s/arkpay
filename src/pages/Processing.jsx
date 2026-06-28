@@ -13,6 +13,7 @@ import GlassCard from "@/components/common/GlassCard";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 const steps = [
   {
@@ -100,6 +101,13 @@ export default function Processing() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+    <VoiceGuide
+  message={
+    completed
+      ? "Card personalization is complete. The card has been ejected. Please continue to card collection."
+      : "Your card is now being personalized. Please wait and do not remove the card or interrupt the kiosk."
+  }
+/>
       <div className="space-y-7">
         <SectionTitle
           icon={Printer}

@@ -7,6 +7,7 @@ import GlassCard from "@/components/common/GlassCard";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +50,8 @@ export default function CustomerDetails() {
 
   return (
     <KioskLayout showInstitution showDevices={false}>
+      <VoiceGuide message="Please enter your ten digit account number and your eleven digit Bank Verification Number to continue." />
+
       <div className="max-w-3xl mx-auto space-y-8">
         <SectionTitle
           icon={KeyRound}

@@ -7,6 +7,7 @@ import GlassCard from "@/components/common/GlassCard";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 export default function CollectCard() {
   const navigate = useNavigate();
@@ -35,6 +36,13 @@ export default function CollectCard() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+    <VoiceGuide
+  message={
+    cardRemoved
+      ? "Your card has been successfully collected. Press continue to complete your transaction."
+      : "Your card is ready. Please remove your card from the collection area. The kiosk will automatically detect when the card has been removed."
+  }
+/>
       <div className="max-w-4xl mx-auto space-y-7">
         <SectionTitle
           icon={CreditCard}

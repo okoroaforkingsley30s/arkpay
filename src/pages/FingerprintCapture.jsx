@@ -16,6 +16,7 @@ import GlassCard from "@/components/common/GlassCard";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
+import VoiceGuide from "@/components/common/VoiceGuide";
 
 const mockCustomerProfile = {
   full_name: "KINGSLEY OKOROAFOR",
@@ -96,6 +97,9 @@ export default function FingerprintCapture() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
+    <VoiceGuide
+  message="Please look directly at the camera. Keep your face inside the guide. Do not move until your identity has been verified. After verification, please confirm your customer information before continuing."
+/>
       <div className="space-y-7">
         <div className="flex items-start justify-between gap-5">
           <SectionTitle
