@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
+  Ban,
   CreditCard,
   Landmark,
   ShieldCheck,
@@ -15,13 +16,14 @@ import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import BankCardPreview from "@/components/card/BankCardPreview";
 
-const cardProducts = [
+const fallbackCardProducts = [
   {
     id: "visa-debit",
     name: "Visa Debit",
     description: "Standard debit card for ATM, POS and online transactions.",
     network: "VISA",
     type: "Debit",
+    eligible: true,
   },
   {
     id: "mastercard-debit",
@@ -29,6 +31,7 @@ const cardProducts = [
     description: "Debit card for local and international transactions.",
     network: "MASTERCARD",
     type: "Debit",
+    eligible: true,
   },
   {
     id: "verve-debit",
@@ -36,13 +39,34 @@ const cardProducts = [
     description: "Local debit card for Nigerian banking transactions.",
     network: "VERVE",
     type: "Debit",
+    eligible: true,
   },
   {
-    id: "prepaid-card",
-    name: "Prepaid Card",
-    description: "Prepaid card option for controlled spending.",
-    network: "PREPAID",
-    type: "Prepaid",
+    id: "visa-gold",
+    name: "Visa Gold",
+    description: "Premium card product controlled by bank eligibility rules.",
+    network: "VISA",
+    type: "Premium",
+    eligible: false,
+    reason: "Not eligible for this account profile",
+  },
+  {
+    id: "platinum-card",
+    name: "Platinum Card",
+    description: "Platinum card product controlled by bank eligibility rules.",
+    network: "MASTERCARD",
+    type: "Premium",
+    eligible: false,
+    reason: "Requires bank approval",
+  },
+  {
+    id: "credit-card",
+    name: "Credit Card",
+    description: "Credit card product controlled by bank credit assessment.",
+    network: "VISA",
+    type: "Credit",
+    eligible: false,
+    reason: "Credit assessment required",
   },
 ];
 
@@ -51,7 +75,30 @@ export default function CardPreview() {
   const location = useLocation();
   const formData = location.state || {};
 
+  const products = useMemo(() => {
+    const bankProducts =
+      formData.eligible_cards ||
+      formData.eligibleCards ||
+      formData.customer_profile?.eligible_cards;
+
+    if (Array.isArray(bankProducts) && bankProducts.length > 0) {
+      return bankProducts.map((product) => ({
+        ...product,
+        eligible: product.eligible !== false,
+      }));
+    }
+
+    return fallbackCardProducts;
+  }, [formData]);
+
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const eligibleCount = products.filter((product) => product.eligible !== false).length;
+
+  const handleSelect = (product) => {
+    if (product.eligible === false) return;
+    setSelectedProduct(product);
+  };
 
   const handleContinue = () => {
     if (!selectedProduct) return;
@@ -62,6 +109,7 @@ export default function CardPreview() {
         card_product_id: selectedProduct.id,
         card_type: selectedProduct.name,
         card_network: selectedProduct.network,
+        card_product: selectedProduct,
       },
     });
   };
@@ -73,7 +121,7 @@ export default function CardPreview() {
           <SectionTitle
             icon={CreditCard}
             title="Select Card Product"
-            subtitle="Choose the card product to personalize for this customer."
+            subtitle="Only bank-approved card products can be selected for this customer."
           />
 
           <PrimaryButton
@@ -90,6 +138,10 @@ export default function CardPreview() {
           <StatusBadge status="success" label="Identity Verified" />
           <StatusBadge status="success" label="Signature Captured" />
           <StatusBadge
+            status={eligibleCount > 0 ? "success" : "warning"}
+            label={`${eligibleCount} Eligible Card${eligibleCount === 1 ? "" : "s"}`}
+          />
+          <StatusBadge
             status={selectedProduct ? "success" : "pending"}
             label={selectedProduct ? selectedProduct.name : "Card Product Required"}
           />
@@ -98,32 +150,46 @@ export default function CardPreview() {
         <div className="grid grid-cols-1 xl:grid-cols-[1.05fr_0.95fr] gap-6">
           <GlassCard
             title="Available Card Products"
-            subtitle="Products shown here will later come from the bank card product setup."
+            subtitle="Eligibility will come from the bank after customer verification."
             icon={Landmark}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {cardProducts.map((product) => {
+              {products.map((product) => {
                 const selected = selectedProduct?.id === product.id;
+                const eligible = product.eligible !== false;
 
                 return (
                   <button
                     key={product.id}
                     type="button"
-                    onClick={() => setSelectedProduct(product)}
+                    disabled={!eligible}
+                    onClick={() => handleSelect(product)}
                     className={`rounded-3xl border p-5 text-left transition-all ${
                       selected
                         ? "bg-blue-600/20 border-blue-300 shadow-lg shadow-blue-500/20"
-                        : "bg-white/5 border-blue-900/30 hover:bg-white/10 hover:border-blue-500/50"
+                        : eligible
+                        ? "bg-white/5 border-blue-900/30 hover:bg-white/10 hover:border-blue-500/50"
+                        : "bg-white/[0.03] border-red-500/20 opacity-60 cursor-not-allowed"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-blue-600/20 border border-blue-500/20 flex items-center justify-center">
-                        <CreditCard className="w-7 h-7 text-blue-300" />
+                      <div
+                        className={`w-14 h-14 rounded-2xl border flex items-center justify-center ${
+                          eligible
+                            ? "bg-blue-600/20 border-blue-500/20"
+                            : "bg-red-500/10 border-red-500/20"
+                        }`}
+                      >
+                        {eligible ? (
+                          <CreditCard className="w-7 h-7 text-blue-300" />
+                        ) : (
+                          <Ban className="w-7 h-7 text-red-300" />
+                        )}
                       </div>
 
                       <StatusBadge
-                        status={selected ? "success" : "pending"}
-                        label={selected ? "Selected" : product.type}
+                        status={selected ? "success" : eligible ? "pending" : "warning"}
+                        label={selected ? "Selected" : eligible ? product.type : "Not Eligible"}
                         size="sm"
                       />
                     </div>
@@ -136,9 +202,17 @@ export default function CardPreview() {
                       {product.description}
                     </p>
 
-                    <p className="text-blue-200 text-xs font-bold mt-5 tracking-widest">
-                      {product.network}
-                    </p>
+                    <div className="mt-5 flex items-center justify-between gap-3">
+                      <p className="text-blue-200 text-xs font-bold tracking-widest">
+                        {product.network}
+                      </p>
+
+                      {!eligible && (
+                        <p className="text-red-300 text-xs font-semibold text-right">
+                          {product.reason || "Bank approval required"}
+                        </p>
+                      )}
+                    </div>
                   </button>
                 );
               })}
@@ -147,12 +221,11 @@ export default function CardPreview() {
 
           <GlassCard
             title="Card Product Preview"
-            subtitle="Preview updates after selecting a card product."
+            subtitle="Preview updates after selecting an eligible card product."
             icon={ShieldCheck}
           >
             <div className="min-h-[460px] flex flex-col items-center justify-center">
               <BankCardPreview
-                cardType={selectedProduct?.name || "Select Card Product"}
                 cardNetwork={selectedProduct?.network || "VISA"}
                 nameOnCard={
                   formData.full_name?.toUpperCase() ||
@@ -163,8 +236,8 @@ export default function CardPreview() {
 
               <p className="text-blue-300 text-center mt-8 max-w-sm">
                 {selectedProduct
-                  ? `${selectedProduct.name} is ready for personalization.`
-                  : "Select a card product to continue."}
+                  ? `${selectedProduct.name} is eligible and ready for personalization.`
+                  : "Select an eligible card product to continue."}
               </p>
             </div>
           </GlassCard>

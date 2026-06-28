@@ -1,8 +1,15 @@
 import React, { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { CheckCircle2, Printer } from "lucide-react";
+import { CheckCircle2, FileText } from "lucide-react";
 import KioskButton from "@/components/kiosk/KioskButton";
+
+function maskAccount(accountNumber = "") {
+  const value = String(accountNumber || "");
+  if (value.length <= 4) return value || "—";
+
+  return `${"*".repeat(Math.max(value.length - 4, 0))}${value.slice(-4)}`;
+}
 
 export default function Success() {
   const navigate = useNavigate();
@@ -10,7 +17,6 @@ export default function Success() {
   const formData = location.state || {};
 
   useEffect(() => {
-    // Auto-redirect after 30 seconds
     const timer = setTimeout(() => navigate("/"), 30000);
     return () => clearTimeout(timer);
   }, [navigate]);
@@ -37,28 +43,39 @@ export default function Success() {
           <CheckCircle2 className="w-14 h-14 text-green-400" />
         </motion.div>
 
-        <h1 className="text-3xl font-bold text-white mb-2">Card Issued Successfully!</h1>
-        <p className="text-blue-300/80 text-sm mb-2">Your new {formData.card_type || "debit card"} is ready</p>
-        <p className="text-blue-400/50 text-xs mb-8">Please collect your card from the dispenser below</p>
+        <h1 className="text-3xl font-bold text-white mb-2">
+          Transaction Completed
+        </h1>
+
+        <p className="text-blue-300/80 text-sm mb-2">
+          Your card has been successfully personalized and collected.
+        </p>
+
+        <p className="text-blue-400/50 text-xs mb-8">
+          Thank you for using the ArkPay Self-Service Card Issuance Kiosk.
+        </p>
 
         <div className="bg-white/5 backdrop-blur rounded-2xl p-5 w-full max-w-xs border border-white/10 mb-8">
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-blue-300/60">Name</span>
-              <span className="text-white font-medium">{formData.full_name || "—"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-blue-300/60">Account</span>
-              <span className="text-white font-medium">{formData.account_number || "—"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-blue-300/60">Card</span>
-              <span className="text-white font-medium">{formData.card_type || "—"}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-blue-300/60">Card No.</span>
-              <span className="text-white font-mono">•••• 7821</span>
-            </div>
+            <SummaryLine
+              label="Name"
+              value={
+                formData.full_name ||
+                formData.customer_profile?.full_name ||
+                formData.name_on_card
+              }
+            />
+            <SummaryLine
+              label="Account"
+              value={maskAccount(formData.account_number)}
+            />
+            <SummaryLine label="Card" value={formData.card_type} />
+            <SummaryLine
+              label="Card No."
+              value={formData.card_last4 ? `•••• ${formData.card_last4}` : "•••• 7821"}
+              mono
+            />
+            <SummaryLine label="Status" value="Completed" />
           </div>
         </div>
 
@@ -66,15 +83,35 @@ export default function Success() {
           <KioskButton
             onClick={() => navigate("/receipt", { state: formData })}
             className="w-full"
-            icon={<Printer className="w-5 h-5" />}
+            icon={<FileText className="w-5 h-5" />}
           >
-            Print Receipt
+            View Receipt
           </KioskButton>
-          <KioskButton variant="ghost" onClick={() => navigate("/")} className="w-full text-blue-300">
+
+          <KioskButton
+            variant="ghost"
+            onClick={() => navigate("/")}
+            className="w-full text-blue-300"
+          >
             Done — Return Home
           </KioskButton>
         </div>
       </motion.div>
+    </div>
+  );
+}
+
+function SummaryLine({ label, value, mono = false }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <span className="text-blue-300/60">{label}</span>
+      <span
+        className={`text-white font-medium text-right ${
+          mono ? "font-mono" : ""
+        }`}
+      >
+        {value || "—"}
+      </span>
     </div>
   );
 }

@@ -24,6 +24,7 @@ import AdminLogin from "@/pages/AdminLogin";
 import AdminDashboard from "@/pages/AdminDashboard";
 import EmbossFileUpload from "@/pages/EmbossFileUpload";
 import CardRequestQueue from "@/pages/CardRequestQueue";
+import CollectCard from "@/pages/CollectCard";
 import InstitutionSetup from "@/pages/InstitutionSetup";
 import DeviceTest from "@/pages/DeviceTest";
 import AuditLogs from "@/pages/AuditLogs";
@@ -47,6 +48,7 @@ function App() {
             <Route path="/card-preview" element={<CardPreview />} />
             <Route path="/processing" element={<Processing />} />
             <Route path="/success" element={<Success />} />
+            <Route path="/collect-card" element={<CollectCard />} />
             <Route path="/receipt" element={<Receipt />} />
 
             <Route path="/admin-login" element={<AdminLogin />} />

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  AlertTriangle,
   CheckCircle2,
   CreditCard,
   Cpu,
@@ -17,29 +16,44 @@ import StatusBadge from "@/components/common/StatusBadge";
 
 const steps = [
   {
-    label: "Initializing Printer",
-    note: "Preparing card personalization device.",
+    label: "Preparing Personalization Device",
+    note: "Checking printer, encoder and personalization readiness.",
     icon: Printer,
   },
   {
     label: "Loading Blank Card",
-    note: "Loading a blank card into the printer.",
+    note: "Loading a blank card into the card path.",
     icon: CreditCard,
   },
   {
-    label: "Encoding Chip",
-    note: "Writing personalization data to the chip.",
-    icon: Cpu,
-  },
-  {
-    label: "Printing Card",
-    note: "Printing customer information on the card.",
+    label: "Printing Customer Artwork",
+    note: "Applying approved bank artwork and customer print data.",
     icon: Printer,
   },
   {
-    label: "Verifying Card",
-    note: "Performing final quality verification.",
+    label: "Writing EMV Chip",
+    note: "Writing chip data provided by the bank personalization system.",
+    icon: Cpu,
+  },
+  {
+    label: "Writing Magnetic Stripe",
+    note: "Writing magnetic stripe data for supported channels.",
+    icon: CreditCard,
+  },
+  {
+    label: "Printing Card",
+    note: "Printing visible customer and card information.",
+    icon: Printer,
+  },
+  {
+    label: "Quality Verification",
+    note: "Verifying personalization output before release.",
     icon: ShieldCheck,
+  },
+  {
+    label: "Ejecting Card",
+    note: "Moving the completed card to the collection area.",
+    icon: CreditCard,
   },
 ];
 
@@ -66,7 +80,7 @@ export default function Processing() {
 
         return previousStep + 1;
       });
-    }, 1400);
+    }, 1200);
 
     return () => clearInterval(timer);
   }, []);
@@ -74,10 +88,11 @@ export default function Processing() {
   const progress = Math.round(((currentStep + 1) / steps.length) * 100);
 
   const handleContinue = () => {
-    navigate("/success", {
+    navigate("/collect-card", {
       state: {
         ...formData,
-        personalization_status: "demo_completed",
+        personalization_status: "completed",
+        card_ejected: true,
         device_sdk_connected: false,
       },
     });
@@ -89,7 +104,7 @@ export default function Processing() {
         <SectionTitle
           icon={Printer}
           title="Card Personalization"
-          subtitle="Please wait while ArkPay prepares the card for encoding and printing."
+          subtitle="Please wait while ArkPay personalizes the customer card."
         />
 
         <div className="flex flex-wrap gap-3">
@@ -100,15 +115,15 @@ export default function Processing() {
             label={formData.card_type || "Card Product Selected"}
           />
           <StatusBadge
-            status={completed ? "warning" : "pending"}
-            label={completed ? "SDK Placeholder Mode" : "Processing"}
+            status={completed ? "success" : "pending"}
+            label={completed ? "Card Ready for Collection" : "Processing"}
           />
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_0.85fr] gap-6">
           <GlassCard
             title="Personalization Progress"
-            subtitle="This demo simulates the printer and card encoder workflow until the real SDK is connected."
+            subtitle="This sequence represents the live card printer and encoder workflow."
             icon={Cpu}
           >
             <div className="space-y-6">
@@ -189,7 +204,7 @@ export default function Processing() {
 
           <GlassCard
             title="Device Status"
-            subtitle="Hardware integration will be connected after SDK access is available."
+            subtitle="In live mode, this area will reflect real printer and encoder events."
             icon={Printer}
           >
             <div className="min-h-[520px] flex flex-col justify-center">
@@ -209,18 +224,17 @@ export default function Processing() {
                 </div>
               ) : (
                 <div className="text-center">
-                  <div className="w-44 h-44 mx-auto rounded-full bg-amber-500/10 border border-amber-500/40 flex items-center justify-center">
-                    <AlertTriangle className="w-20 h-20 text-amber-300" />
+                  <div className="w-44 h-44 mx-auto rounded-full bg-green-500/10 border border-green-500/40 flex items-center justify-center">
+                    <CheckCircle2 className="w-20 h-20 text-green-300" />
                   </div>
 
                   <h3 className="text-2xl font-bold text-white mt-8">
-                    Device SDK Not Connected
+                    Card Ejected
                   </h3>
 
                   <p className="text-blue-300 mt-4 leading-relaxed">
-                    ArkPay completed the demo personalization flow. Real card
-                    printing, chip encoding and device verification will be
-                    enabled when the Seaory S21 and encoder SDKs are connected.
+                    The card has been personalized and moved to the collection
+                    area. Continue to confirm customer card collection.
                   </p>
 
                   <PrimaryButton
@@ -228,7 +242,7 @@ export default function Processing() {
                     className="mt-8"
                     onClick={handleContinue}
                   >
-                    Continue in Demo Mode
+                    Continue to Card Collection
                   </PrimaryButton>
                 </div>
               )}

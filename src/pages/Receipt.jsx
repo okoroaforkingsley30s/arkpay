@@ -136,12 +136,12 @@ export default function Receipt() {
 
               <div className="w-full max-w-md space-y-4 mt-10">
                 <PrimaryButton
-                  fullWidth
-                  icon={Printer}
-                  onClick={() => alert("Receipt printer SDK not connected yet")}
-                >
-                  Print Receipt
-                </PrimaryButton>
+  fullWidth
+  icon={Home}
+  onClick={() => navigate("/")}
+>
+  Finish — Return Home
+</PrimaryButton>
 
                 <PrimaryButton
                   fullWidth
