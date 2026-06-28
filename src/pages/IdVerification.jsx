@@ -1,78 +1,315 @@
-import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Camera, CheckCircle2, AlertCircle } from "lucide-react";
-import KioskHeader from "@/components/kiosk/KioskHeader";
-import KioskButton from "@/components/kiosk/KioskButton";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  Check,
+  CheckCircle2,
+  Fingerprint,
+  Info,
+  ShieldCheck,
+  XCircle,
+} from "lucide-react";
+
+import KioskLayout from "@/components/layout/KioskLayout";
+import GlassCard from "@/components/common/GlassCard";
+import PrimaryButton from "@/components/common/PrimaryButton";
+import SectionTitle from "@/components/common/SectionTitle";
+import StatusBadge from "@/components/common/StatusBadge";
+import InteractiveHand from "@/components/biometric/InteractiveHand";
+
+const workflowSteps = [
+  "Service",
+  "Account",
+  "Fingerprint",
+  "Face",
+  "Details",
+  "Signature",
+  "Card",
+];
 
 export default function IdVerification() {
   const navigate = useNavigate();
   const location = useLocation();
   const formData = location.state || {};
-  const [captured, setCaptured] = useState(false);
-  const [capturing, setCapturing] = useState(false);
 
-  const handleCapture = () => {
-    setCapturing(true);
-    setTimeout(() => {
-      setCapturing(false);
-      setCaptured(true);
+  const [selectedFinger, setSelectedFinger] = useState(null);
+  const [scanStatus, setScanStatus] = useState("idle");
+
+  const scanning = scanStatus === "scanning";
+  const passed = scanStatus === "passed";
+  const failed = scanStatus === "failed";
+
+  useEffect(() => {
+    if (!selectedFinger) return;
+
+    setScanStatus("scanning");
+
+    const timer = setTimeout(() => {
+      setScanStatus("passed");
     }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [selectedFinger]);
+
+  useEffect(() => {
+    if (!passed) return;
+
+    const timer = setTimeout(() => {
+      navigate("/fingerprint", {
+        state: {
+          ...formData,
+          selected_finger: selectedFinger.fullName,
+          fingerprint_verified: true,
+        },
+      });
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, [passed, navigate, formData, selectedFinger]);
+
+  const handleTryAnother = () => {
+    setSelectedFinger(null);
+    setScanStatus("idle");
+  };
+
+  const handleCancel = () => {
+    navigate("/services");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <KioskHeader showBack onBack={() => navigate("/customer-details", { state: { serviceType: formData.service_type } })} step={2} totalSteps={6} />
+    <KioskLayout showInstitution={false} showDevices={false}>
+      <div className="space-y-7">
+        <div className="flex items-start justify-between gap-5">
+          <SectionTitle
+            icon={Fingerprint}
+            title="Fingerprint Verification"
+            subtitle="Select the requested finger. The scanner will begin automatically after selection."
+          />
 
-      <div className="flex-1 p-6 flex flex-col">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex-1 flex flex-col">
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">ID Verification</h2>
-            <p className="text-gray-500 text-sm mt-1">Place your ID card on the scanner</p>
-          </div>
+          <PrimaryButton
+            variant="secondary"
+            size="md"
+            icon={ArrowLeft}
+            onClick={() =>
+              navigate("/customer-details", {
+                state: {
+                  serviceId: formData.serviceId,
+                  serviceType: formData.serviceType,
+                },
+              })
+            }
+          >
+            Back
+          </PrimaryButton>
+        </div>
 
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <div className={`w-72 h-44 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center transition-all duration-300 ${
-              captured ? "border-green-400 bg-green-50" : capturing ? "border-blue-400 bg-blue-50 animate-pulse" : "border-gray-300 bg-white"
-            }`}>
-              {captured ? (
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex flex-col items-center gap-2">
-                  <CheckCircle2 className="w-12 h-12 text-green-500" />
-                  <span className="text-green-700 font-semibold text-sm">ID Captured Successfully</span>
-                </motion.div>
-              ) : capturing ? (
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-blue-600 font-medium text-sm">Scanning...</span>
+        <WizardProgress currentStep={2} />
+
+        <div className="flex flex-wrap gap-3">
+          <StatusBadge
+            status="pending"
+            label={formData.serviceType || "Card Service"}
+          />
+          <StatusBadge
+            status={passed ? "success" : failed ? "error" : "pending"}
+            label={
+              passed
+                ? "Fingerprint Passed"
+                : failed
+                ? "Fingerprint Failed"
+                : scanning
+                ? "Waiting for Fingerprint"
+                : "Select Finger"
+            }
+          />
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-[1.05fr_0.95fr] gap-6">
+          <GlassCard
+            title="Select Finger"
+            subtitle="Tap the finger requested for verification."
+            icon={Fingerprint}
+            className={selectedFinger ? "opacity-70" : ""}
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <HandPanel title="Left Hand">
+                <InteractiveHand
+                  hand="left"
+                  selectedFinger={selectedFinger}
+                  onSelect={setSelectedFinger}
+                  disabled={Boolean(selectedFinger)}
+                />
+              </HandPanel>
+
+              <HandPanel title="Right Hand">
+                <InteractiveHand
+                  hand="right"
+                  selectedFinger={selectedFinger}
+                  onSelect={setSelectedFinger}
+                  disabled={Boolean(selectedFinger)}
+                />
+              </HandPanel>
+            </div>
+
+            <div className="mt-5 flex items-center gap-3 rounded-2xl border border-blue-900/30 bg-blue-500/10 p-4 text-blue-200">
+              <Info className="w-5 h-5 text-blue-300 shrink-0" />
+              <p className="text-sm">
+                Select one finger only. Keep the selected finger clean and dry
+                before placing it on the scanner.
+              </p>
+            </div>
+          </GlassCard>
+
+          <GlassCard
+            title="Scanner Instruction"
+            subtitle="Follow the instruction below."
+            icon={ShieldCheck}
+          >
+            <div className="min-h-[540px] flex flex-col items-center justify-center text-center">
+              <div
+                className={`relative w-52 h-52 rounded-full border flex items-center justify-center mb-8 ${
+                  passed
+                    ? "bg-green-500/10 border-green-500/40"
+                    : failed
+                    ? "bg-red-500/10 border-red-500/40"
+                    : selectedFinger
+                    ? "bg-blue-500/10 border-blue-500/40"
+                    : "bg-white/5 border-blue-900/40"
+                }`}
+              >
+                {selectedFinger && !failed && !passed && (
+                  <>
+                    <div className="absolute inset-0 rounded-full border-4 border-blue-500/20 animate-ping" />
+                    <div className="absolute inset-5 rounded-full border border-blue-400/30" />
+                    <div className="absolute inset-10 rounded-full border border-blue-400/20" />
+                  </>
+                )}
+
+                {passed ? (
+                  <CheckCircle2 className="w-24 h-24 text-green-400" />
+                ) : failed ? (
+                  <XCircle className="w-24 h-24 text-red-400" />
+                ) : (
+                  <Fingerprint
+                    className={`w-24 h-24 ${
+                      selectedFinger ? "text-blue-300" : "text-blue-500/40"
+                    }`}
+                  />
+                )}
+              </div>
+
+              <h3 className="text-3xl font-bold text-white">
+                {passed
+                  ? "Fingerprint Verified"
+                  : failed
+                  ? "Fingerprint Not Matched"
+                  : selectedFinger
+                  ? "Please place your"
+                  : "Awaiting Finger Selection"}
+              </h3>
+
+              {selectedFinger && !passed && !failed && (
+                <p className="mt-3 text-4xl font-black text-blue-300 uppercase tracking-wide">
+                  {selectedFinger.fullName}
+                </p>
+              )}
+
+              {selectedFinger && !passed && !failed && (
+                <p className="mt-2 text-2xl text-white">
+                  on the fingerprint scanner.
+                </p>
+              )}
+
+              <p className="text-blue-300 mt-6 max-w-xl text-lg">
+                {passed
+                  ? "Fingerprint match successful. Proceeding to face verification..."
+                  : failed
+                  ? "Fingerprint did not match. Choose another finger or cancel the transaction."
+                  : selectedFinger
+                  ? "Do not remove your finger until verification is complete."
+                  : "Select one finger from the hand diagram to begin verification."}
+              </p>
+
+              {scanning && (
+                <div className="mt-8 flex items-center gap-3 text-blue-200 font-semibold">
+                  <div className="w-6 h-6 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                  Waiting for fingerprint...
                 </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3 text-gray-400">
-                  <Camera className="w-12 h-12" />
-                  <span className="text-sm font-medium">ID Scanner Ready</span>
+              )}
+
+              {failed && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10 w-full max-w-xl">
+                  <PrimaryButton
+                    fullWidth
+                    variant="secondary"
+                    icon={Fingerprint}
+                    onClick={handleTryAnother}
+                  >
+                    Choose Another Finger
+                  </PrimaryButton>
+
+                  <PrimaryButton
+                    fullWidth
+                    variant="danger"
+                    icon={XCircle}
+                    onClick={handleCancel}
+                  >
+                    Cancel Transaction
+                  </PrimaryButton>
                 </div>
               )}
             </div>
-
-            <div className="mt-4 flex items-center gap-2 text-amber-600 bg-amber-50 px-4 py-2 rounded-lg">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span className="text-xs">Camera device: Placeholder mode</span>
-            </div>
-          </div>
-
-          <div className="mt-auto space-y-3">
-            {!captured && (
-              <KioskButton onClick={handleCapture} disabled={capturing} className="w-full" icon={<Camera className="w-5 h-5" />}>
-                {capturing ? "Scanning..." : "Capture ID"}
-              </KioskButton>
-            )}
-            {captured && (
-              <KioskButton onClick={() => navigate("/fingerprint", { state: { ...formData, id_verified: true } })} className="w-full">
-                Continue
-              </KioskButton>
-            )}
-          </div>
-        </motion.div>
+          </GlassCard>
+        </div>
       </div>
+    </KioskLayout>
+  );
+}
+
+function HandPanel({ title, children }) {
+  return (
+    <div className="rounded-3xl border border-blue-900/30 bg-white/5 p-5">
+      <h3 className="text-center text-blue-300 font-black uppercase tracking-wide mb-3">
+        {title}
+      </h3>
+      {children}
     </div>
+  );
+}
+
+function WizardProgress({ currentStep }) {
+  return (
+    <GlassCard padding="sm">
+      <div className="grid grid-cols-7 gap-3">
+        {workflowSteps.map((step, index) => {
+          const completed = index < currentStep;
+          const active = index === currentStep;
+
+          return (
+            <div key={step} className="flex flex-col items-center gap-2">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center border font-bold ${
+                  completed
+                    ? "bg-blue-600 border-blue-400 text-white"
+                    : active
+                    ? "bg-blue-600/30 border-blue-300 text-white shadow-lg shadow-blue-500/20"
+                    : "bg-white/10 border-blue-900/40 text-blue-300"
+                }`}
+              >
+                {completed ? <Check className="w-5 h-5" /> : index + 1}
+              </div>
+
+              <span
+                className={`text-xs font-semibold ${
+                  active ? "text-white" : "text-blue-300"
+                }`}
+              >
+                {step}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </GlassCard>
   );
 }
