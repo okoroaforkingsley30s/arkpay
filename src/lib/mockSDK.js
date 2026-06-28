@@ -1,81 +1,154 @@
 /**
  * ArkPay Mock SDK Service
- * Placeholder functions for hardware device integration.
- * Replace each function body with real SDK calls when the device service is connected.
+ * Hardware Abstraction Layer for kiosk device integration.
+ * Replace each function body with real SDK calls when vendor SDKs are available.
  */
 
 const SDK_NOT_CONNECTED = "Device SDK not connected yet";
 
-const delay = (ms = 800) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms = 800) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+function notConnected(device, extra = {}) {
+  return {
+    success: false,
+    message: SDK_NOT_CONNECTED,
+    device,
+    ...extra,
+  };
+}
 
 export const mockSDK = {
-  /**
-   * Sends card data to the Seaory S21 printer for physical card printing.
-   * @param {object} cardData - { fullName, cardNumber, expiry, cardType }
-   */
+  async getPrinterStatus() {
+    await delay();
+    return notConnected("Seaory S21 Printer", {
+      status: "offline",
+    });
+  },
+
+  async connectPrinter() {
+    await delay();
+    return notConnected("Seaory S21 Printer");
+  },
+
+  async disconnectPrinter() {
+    await delay();
+    return {
+      success: true,
+      message: "Printer disconnected",
+      device: "Seaory S21 Printer",
+      status: "disconnected",
+    };
+  },
+
   async printCard(cardData) {
     await delay();
     console.log("[ArkPay SDK] printCard called with:", cardData);
-    return { success: false, message: SDK_NOT_CONNECTED, device: "Seaory S21 Printer" };
+    return notConnected("Seaory S21 Printer");
   },
 
-  /**
-   * Encodes chip/magnetic stripe data onto the card.
-   * @param {object} chipData - { accountNumber, cardNumber, serviceCode, pinOffset }
-   */
-  async encodeCard(chipData) {
+  async getEncoderStatus() {
     await delay();
-    console.log("[ArkPay SDK] encodeCard called with:", chipData);
-    return { success: false, message: SDK_NOT_CONNECTED, device: "Smart Card Reader/Encoder" };
+    return notConnected("Smart Card Encoder", {
+      status: "offline",
+    });
   },
 
-  /**
-   * Captures fingerprint from the biometric scanner.
-   * @param {number} finger - finger index (1-10)
-   */
-  async captureFingerprint(finger = 1) {
-    await delay(1200);
-    console.log("[ArkPay SDK] captureFingerprint called, finger:", finger);
-    return { success: false, message: SDK_NOT_CONNECTED, device: "Fingerprint Scanner" };
-  },
-
-  /**
-   * Captures a photo/ID scan using the kiosk camera.
-   * @param {string} mode - "id" | "face"
-   */
-  async capturePhoto(mode = "id") {
-    await delay();
-    console.log("[ArkPay SDK] capturePhoto called, mode:", mode);
-    return { success: false, message: SDK_NOT_CONNECTED, device: "Camera" };
-  },
-
-  /**
-   * Reads data from an inserted smart card.
-   */
   async readSmartCard() {
     await delay(1000);
     console.log("[ArkPay SDK] readSmartCard called");
-    return { success: false, message: SDK_NOT_CONNECTED, device: "Smart Card Reader" };
+    return notConnected("Smart Card Reader");
   },
 
-  /**
-   * Sends PIN block to the PIN pad for secure PIN setting.
-   * @param {string} encryptedPin - encrypted PIN block from PIN pad
-   */
+  async detectCard() {
+    await delay();
+    return notConnected("Card Path Sensor", {
+      inserted: false,
+    });
+  },
+
+  async detectCardRemoval() {
+    await delay();
+    return notConnected("Card Collection Sensor", {
+      removed: false,
+    });
+  },
+
+  async encodeCard(chipData) {
+    await delay();
+    console.log("[ArkPay SDK] encodeCard called with:", chipData);
+    return notConnected("Smart Card Reader/Encoder");
+  },
+
+  async captureFingerprint(finger = 1) {
+    await delay(1200);
+    console.log("[ArkPay SDK] captureFingerprint called, finger:", finger);
+    return notConnected("Fingerprint Scanner");
+  },
+
+  async startCameraPreview() {
+    await delay();
+    return notConnected("Customer Camera");
+  },
+
+  async stopCameraPreview() {
+    await delay();
+    return {
+      success: true,
+      message: "Camera preview stopped",
+      device: "Customer Camera",
+    };
+  },
+
+  async capturePhoto(mode = "id") {
+    await delay();
+    console.log("[ArkPay SDK] capturePhoto called, mode:", mode);
+    return notConnected("Customer Camera");
+  },
+
+  async getSignaturePadStatus() {
+    await delay();
+    return notConnected("Signature Pad", {
+      status: "offline",
+    });
+  },
+
+  async captureSignature() {
+    await delay();
+    return notConnected("Signature Pad");
+  },
+
+  async getPinPadStatus() {
+    await delay();
+    return notConnected("PIN Pad", {
+      status: "offline",
+    });
+  },
+
   async setPin(encryptedPin) {
     await delay();
-    console.log("[ArkPay SDK] setPin called");
-    return { success: false, message: SDK_NOT_CONNECTED, device: "PIN Pad" };
+    console.log("[ArkPay SDK] setPin called:", encryptedPin ? "PIN block received" : "No PIN block");
+    return notConnected("PIN Pad");
   },
 
-  /**
-   * Sends receipt data to the printer for thermal receipt output.
-   * @param {object} receiptData - { refNo, name, cardType, date, branch }
-   */
+  async readContactlessCard() {
+    await delay();
+    return notConnected("Contactless Reader", {
+      detected: false,
+    });
+  },
+
+  async getContactlessReaderStatus() {
+    await delay();
+    return notConnected("Contactless Reader", {
+      status: "offline",
+    });
+  },
+
   async printReceipt(receiptData) {
     await delay();
     console.log("[ArkPay SDK] printReceipt called with:", receiptData);
-    return { success: false, message: SDK_NOT_CONNECTED, device: "Seaory S21 Printer (Receipt)" };
+    return notConnected("Receipt Printer");
   },
 };
 
