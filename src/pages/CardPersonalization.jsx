@@ -16,6 +16,7 @@ import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import BankCardPreview from "@/components/card/BankCardPreview";
 import VoiceGuide from "@/components/common/VoiceGuide";
+import configManager from "@/services/configManager";
 
 const fallbackThemes = [
   {
@@ -86,6 +87,7 @@ export default function CardPersonalization() {
   const navigate = useNavigate();
   const location = useLocation();
   const formData = location.state || {};
+  const config = useMemo(() => configManager.getConfig(), []);
 
   const officialName = useMemo(() => {
     return normalizeName(
@@ -280,13 +282,15 @@ export default function CardPersonalization() {
           >
             <div className="min-h-[520px] flex flex-col items-center justify-center">
               <BankCardPreview
-                cardNetwork={formData.card_network || "VISA"}
-                nameOnCard={nameOnCard}
-                themeGradient={
-                  selectedTheme?.gradient ||
-                  "from-[#071321] via-[#0A2540] to-[#123B67]"
-                }
-              />
+  bankName={config.institution.name}
+  bankLogo={config.institution.logoUrl}
+  cardNetwork={formData.card_network || "VISA"}
+  nameOnCard={nameOnCard}
+  themeGradient={
+    selectedTheme?.gradient ||
+    "from-[#071321] via-[#0A2540] to-[#123B67]"
+  }
+/>
 
               <p className="text-blue-300 text-center mt-8 max-w-md">
                 The printed name and card artwork are controlled by bank rules.

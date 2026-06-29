@@ -14,47 +14,56 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import VoiceGuide from "@/components/common/VoiceGuide";
+import deviceManager from "@/services/deviceManager";
 
 const steps = [
   {
     label: "Preparing Personalization Device",
     note: "Checking printer, encoder and personalization readiness.",
     icon: Printer,
+    action: "getPrinterStatus",
   },
   {
     label: "Loading Blank Card",
     note: "Loading a blank card into the card path.",
     icon: CreditCard,
+    action: "detectCard",
   },
   {
     label: "Printing Customer Artwork",
     note: "Applying approved bank artwork and customer print data.",
     icon: Printer,
+    action: "printCard",
   },
   {
     label: "Writing EMV Chip",
     note: "Writing chip data provided by the bank personalization system.",
     icon: Cpu,
+    action: "encodeCard",
   },
   {
     label: "Writing Magnetic Stripe",
     note: "Writing magnetic stripe data for supported channels.",
     icon: CreditCard,
+    action: "encodeCard",
   },
   {
     label: "Printing Card",
     note: "Printing visible customer and card information.",
     icon: Printer,
+    action: "printCard",
   },
   {
     label: "Quality Verification",
     note: "Verifying personalization output before release.",
     icon: ShieldCheck,
+    action: "getEncoderStatus",
   },
   {
     label: "Ejecting Card",
     note: "Moving the completed card to the collection area.",
     icon: CreditCard,
+    action: "detectCard",
   },
 ];
 
@@ -65,28 +74,81 @@ export default function Processing() {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [stepResults, setStepResults] = useState({});
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentStep((previousStep) => {
-        if (previousStep >= steps.length - 1) {
-          clearInterval(timer);
+    let cancelled = false;
 
-          setTimeout(() => {
-            setCompleted(true);
-          }, 700);
+    const runProcessing = async () => {
+      for (let index = 0; index < steps.length; index += 1) {
+        if (cancelled) return;
 
-          return previousStep;
+        const step = steps[index];
+        setCurrentStep(index);
+
+        try {
+          const actionFn = deviceManager[step.action];
+
+          if (typeof actionFn === "function") {
+            const result = await actionFn(createDevicePayload(step, formData));
+
+            if (cancelled) return;
+
+            setStepResults((prev) => ({
+              ...prev,
+              [index]: {
+                success: result?.success !== false,
+                simulated: result?.simulated || result?.success === false,
+                message: result?.message || "Step completed.",
+              },
+            }));
+          } else {
+            await delay(900);
+
+            if (cancelled) return;
+
+            setStepResults((prev) => ({
+              ...prev,
+              [index]: {
+                success: true,
+                simulated: true,
+                message: "Simulated step completed.",
+              },
+            }));
+          }
+        } catch (error) {
+          if (cancelled) return;
+
+          setStepResults((prev) => ({
+            ...prev,
+            [index]: {
+              success: true,
+              simulated: true,
+              message:
+                error?.message ||
+                "Hardware not connected. Simulated step completed.",
+            },
+          }));
         }
 
-        return previousStep + 1;
-      });
-    }, 1200);
+        await delay(650);
+      }
 
-    return () => clearInterval(timer);
-  }, []);
+      if (!cancelled) {
+        setCompleted(true);
+      }
+    };
 
-  const progress = Math.round(((currentStep + 1) / steps.length) * 100);
+    runProcessing();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [formData]);
+
+  const progress = Math.round(
+    ((completed ? steps.length : currentStep + 1) / steps.length) * 100
+  );
 
   const handleContinue = () => {
     navigate("/collect-card", {
@@ -95,19 +157,21 @@ export default function Processing() {
         personalization_status: "completed",
         card_ejected: true,
         device_sdk_connected: false,
+        device_processing_results: stepResults,
       },
     });
   };
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
-    <VoiceGuide
-  message={
-    completed
-      ? "Card personalization is complete. The card has been ejected. Please continue to card collection."
-      : "Your card is now being personalized. Please wait and do not remove the card or interrupt the kiosk."
-  }
-/>
+      <VoiceGuide
+        message={
+          completed
+            ? "Card personalization is complete. The card has been ejected. Please continue to card collection."
+            : "Your card is now being personalized. Please wait and do not remove the card or interrupt the kiosk."
+        }
+      />
+
       <div className="space-y-7">
         <SectionTitle
           icon={Printer}
@@ -156,6 +220,7 @@ export default function Processing() {
                   const Icon = step.icon;
                   const active = index === currentStep && !completed;
                   const done = index < currentStep || completed;
+                  const result = stepResults[index];
 
                   return (
                     <div
@@ -200,6 +265,12 @@ export default function Processing() {
                               <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
                               In progress...
                             </div>
+                          )}
+
+                          {result?.simulated && done && (
+                            <p className="mt-3 text-xs text-amber-300 font-semibold">
+                              Simulation mode: waiting for real device SDK.
+                            </p>
                           )}
                         </div>
                       </div>
@@ -260,4 +331,37 @@ export default function Processing() {
       </div>
     </KioskLayout>
   );
+}
+
+function createDevicePayload(step, formData) {
+  if (step.action === "printCard") {
+    return {
+      fullName:
+        formData.name_on_card ||
+        formData.full_name ||
+        formData.customer_profile?.full_name,
+      cardType: formData.card_type,
+      cardNetwork: formData.card_network,
+      accountNumber: formData.account_number,
+      theme: formData.card_theme_name,
+    };
+  }
+
+  if (step.action === "encodeCard") {
+    return {
+      accountNumber: formData.account_number,
+      cardType: formData.card_type,
+      cardNetwork: formData.card_network,
+      personalizationReference: formData.personalization_reference,
+    };
+  }
+
+  return {
+    accountNumber: formData.account_number,
+    cardType: formData.card_type,
+  };
+}
+
+function delay(ms = 800) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

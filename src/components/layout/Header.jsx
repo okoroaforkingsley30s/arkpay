@@ -9,15 +9,15 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useKiosk } from "@/contexts/KioskContext";
+import { useMemo } from "react";
+import configManager from "@/services/configManager";
 
 export default function Header() {
   const navigate = useNavigate();
 
-  const {
-    config,
-    isOnline,
-    currentTime,
-  } = useKiosk();
+  const { isOnline, currentTime } = useKiosk();
+
+const config = useMemo(() => configManager.getConfig(), []);
 
   const time = currentTime.toLocaleTimeString([], {
     hour: "2-digit",

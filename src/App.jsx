@@ -28,6 +28,7 @@ import CardRequestQueue from "@/pages/CardRequestQueue";
 import InstitutionSetup from "@/pages/InstitutionSetup";
 import DeviceTest from "@/pages/DeviceTest";
 import AuditLogs from "@/pages/AuditLogs";
+import KioskDiagnostics from "@/pages/KioskDiagnostics";
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
             <Route path="/admin/institution" element={<InstitutionSetup />} />
             <Route path="/admin/devices" element={<DeviceTest />} />
             <Route path="/admin/audit" element={<AuditLogs />} />
+            <Route path="/admin/diagnostics" element={<KioskDiagnostics />} />
 
             <Route path="*" element={<PageNotFound />} />
           </Routes>

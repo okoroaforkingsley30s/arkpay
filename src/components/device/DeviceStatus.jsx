@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Printer,
   Camera,
@@ -9,7 +9,7 @@ import {
   ScanLine,
   Circle,
 } from "lucide-react";
-import { useKiosk } from "@/contexts/KioskContext";
+import deviceManager from "@/services/deviceManager";
 
 const devices = [
   {
@@ -50,7 +50,30 @@ const devices = [
 ];
 
 export default function DeviceStatus() {
-  const { deviceStatus } = useKiosk();
+  const [deviceStatus, setDeviceStatus] = useState({});
+  useEffect(() => {
+  let mounted = true;
+
+  async function loadStatus() {
+    const health = await deviceManager.healthCheck();
+
+    if (!mounted) return;
+
+    const status = {};
+
+    (health.devices || []).forEach((device) => {
+      status[device.key] = device.success ? "Ready" : "Offline";
+    });
+
+    setDeviceStatus(status);
+  }
+
+  loadStatus();
+
+  return () => {
+    mounted = false;
+  };
+}, []);
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4">

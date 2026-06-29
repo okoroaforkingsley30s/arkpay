@@ -1,9 +1,10 @@
 import React from "react";
 import { Building2, MapPin, Landmark } from "lucide-react";
-import { useKiosk } from "@/contexts/KioskContext";
+import { useMemo } from "react";
+import configManager from "@/services/configManager";
 
 export default function InstitutionBanner() {
-  const { config } = useKiosk();
+  const config = useMemo(() => configManager.getConfig(), []);
 
   return (
     <div className="w-full bg-white/5 backdrop-blur-md border border-blue-900/30 rounded-2xl p-6">

@@ -16,6 +16,7 @@ import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import BankCardPreview from "@/components/card/BankCardPreview";
 import VoiceGuide from "@/components/common/VoiceGuide";
+import configManager from "@/services/configManager";
 
 const fallbackCardProducts = [
   {
@@ -75,6 +76,7 @@ export default function CardPreview() {
   const navigate = useNavigate();
   const location = useLocation();
   const formData = location.state || {};
+  const config = useMemo(() => configManager.getConfig(), []);
 
   const products = useMemo(() => {
     const bankProducts =
@@ -228,13 +230,15 @@ export default function CardPreview() {
           >
             <div className="min-h-[460px] flex flex-col items-center justify-center">
               <BankCardPreview
-                cardNetwork={selectedProduct?.network || "VISA"}
-                nameOnCard={
-                  formData.full_name?.toUpperCase() ||
-                  formData.customer_profile?.full_name?.toUpperCase() ||
-                  "CARD HOLDER"
-                }
-              />
+  bankName={config.institution.name}
+  bankLogo={config.institution.logoUrl}
+  cardNetwork={selectedProduct?.network || "VISA"}
+  nameOnCard={
+    formData.full_name?.toUpperCase() ||
+    formData.customer_profile?.full_name?.toUpperCase() ||
+    "CARD HOLDER"
+  }
+/>
 
               <p className="text-blue-300 text-center mt-8 max-w-sm">
                 {selectedProduct

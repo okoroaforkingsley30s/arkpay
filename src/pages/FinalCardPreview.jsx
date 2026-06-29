@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -18,11 +18,13 @@ import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import BankCardPreview from "@/components/card/BankCardPreview";
 import VoiceGuide from "@/components/common/VoiceGuide";
+import configManager from "@/services/configManager";
 
 export default function FinalCardPreview() {
   const navigate = useNavigate();
   const location = useLocation();
   const formData = location.state || {};
+  const config = useMemo(() => configManager.getConfig(), []);
 
   const [confirmed, setConfirmed] = useState(false);
   const [authorized, setAuthorized] = useState(false);
@@ -95,13 +97,15 @@ export default function FinalCardPreview() {
           >
             <div className="min-h-[520px] flex flex-col items-center justify-center">
               <BankCardPreview
-                cardNetwork={formData.card_network || "VISA"}
-                nameOnCard={formData.name_on_card || "CARD HOLDER"}
-                themeGradient={
-                  formData.card_theme_gradient ||
-                  "from-[#071321] via-[#0A2540] to-[#123B67]"
-                }
-              />
+  bankName={config.institution.name}
+  bankLogo={config.institution.logoUrl}
+  cardNetwork={formData.card_network || "VISA"}
+  nameOnCard={formData.name_on_card || "CARD HOLDER"}
+  themeGradient={
+    formData.card_theme_gradient ||
+    "from-[#071321] via-[#0A2540] to-[#123B67]"
+  }
+/>
 
               <p className="text-blue-300 text-center mt-8 max-w-md">
                 Final printed card details will be supplied by the bank

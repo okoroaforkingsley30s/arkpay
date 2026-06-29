@@ -8,6 +8,7 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import SectionTitle from "@/components/common/SectionTitle";
 import StatusBadge from "@/components/common/StatusBadge";
 import VoiceGuide from "@/components/common/VoiceGuide";
+import deviceManager from "@/services/deviceManager";
 
 export default function CollectCard() {
   const navigate = useNavigate();
@@ -15,13 +16,49 @@ export default function CollectCard() {
   const formData = location.state || {};
 
   const [cardRemoved, setCardRemoved] = useState(false);
+  const [checkingRemoval, setCheckingRemoval] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCardRemoved(true);
-    }, 2500);
+    let cancelled = false;
 
-    return () => clearTimeout(timer);
+    const checkCardRemoval = async () => {
+      setCheckingRemoval(true);
+
+      try {
+        const result = await deviceManager.detectCardRemoval();
+
+        if (cancelled) return;
+
+        if (result?.removed === true || result?.success === true) {
+          setCardRemoved(true);
+          setCheckingRemoval(false);
+          return;
+        }
+
+        // Foundation fallback until real card removal sensor SDK is connected.
+        setTimeout(() => {
+          if (!cancelled) {
+            setCardRemoved(true);
+            setCheckingRemoval(false);
+          }
+        }, 2500);
+      } catch {
+        if (cancelled) return;
+
+        setTimeout(() => {
+          if (!cancelled) {
+            setCardRemoved(true);
+            setCheckingRemoval(false);
+          }
+        }, 2500);
+      }
+    };
+
+    checkCardRemoval();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleContinue = () => {
@@ -36,13 +73,14 @@ export default function CollectCard() {
 
   return (
     <KioskLayout showInstitution={false} showDevices={false}>
-    <VoiceGuide
-  message={
-    cardRemoved
-      ? "Your card has been successfully collected. Press continue to complete your transaction."
-      : "Your card is ready. Please remove your card from the collection area. The kiosk will automatically detect when the card has been removed."
-  }
-/>
+      <VoiceGuide
+        message={
+          cardRemoved
+            ? "Your card has been successfully collected. Press continue to complete your transaction."
+            : "Your card is ready. Please remove your card from the collection area. The kiosk will automatically detect when the card has been removed."
+        }
+      />
+
       <div className="max-w-4xl mx-auto space-y-7">
         <SectionTitle
           icon={CreditCard}
@@ -55,7 +93,13 @@ export default function CollectCard() {
           <StatusBadge status="success" label="Card Ejected" />
           <StatusBadge
             status={cardRemoved ? "success" : "pending"}
-            label={cardRemoved ? "Card Removed" : "Waiting for Card Removal"}
+            label={
+              cardRemoved
+                ? "Card Removed"
+                : checkingRemoval
+                ? "Checking Card Removal"
+                : "Waiting for Card Removal"
+            }
           />
         </div>
 

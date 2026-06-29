@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ShieldCheck, Wifi } from "lucide-react";
+import configManager from "@/services/configManager";
 
 function getNetwork(network = "") {
   return network.toUpperCase();
 }
 
 export default function BankCardPreview({
-  bankName = "ArkPay Bank",
-  bankLogo = null,
+  bankName,
+  bankLogo,
   cardNetwork = "VISA",
   nameOnCard = "CARD HOLDER",
   cardNumber = "5399 •••• •••• 7821",
@@ -17,6 +18,10 @@ export default function BankCardPreview({
 }) {
   const network = getNetwork(cardNetwork);
   const [side, setSide] = useState("front");
+  const institution = useMemo(() => configManager.getInstitution(), []);
+  
+  const resolvedBankName = bankName || institution.name || "ArkPay Bank";
+  const resolvedBankLogo = bankLogo || institution.logoUrl || null;
 
   return (
     <div className="w-full max-w-lg">
@@ -48,8 +53,8 @@ export default function BankCardPreview({
 
       {side === "front" ? (
         <CardFront
-          bankName={bankName}
-          bankLogo={bankLogo}
+          bankName={resolvedBankName}
+          bankLogo={resolvedBankLogo}
           network={network}
           nameOnCard={nameOnCard}
           cardNumber={cardNumber}
@@ -58,7 +63,7 @@ export default function BankCardPreview({
         />
       ) : (
         <CardBack
-          bankName={bankName}
+          bankName={resolvedBankName}
           csc={csc}
           themeGradient={themeGradient}
         />

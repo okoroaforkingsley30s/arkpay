@@ -1,9 +1,24 @@
 import React, { useState } from "react";
+import { useMemo } from "react";
+import configManager from "@/services/configManager";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  CreditCard, Clock, CheckCircle2, XCircle, Monitor, BarChart3,
-  LogOut, Cpu, Upload, List, Building2, Wrench, Shield, Package
+  CreditCard,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  Monitor,
+  BarChart3,
+  LogOut,
+  Cpu,
+  Upload,
+  List,
+  Building2,
+  Wrench,
+  Shield,
+  Package,
+  Activity
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeviceStatusPanel from "@/components/admin/DeviceStatusPanel";
@@ -35,6 +50,7 @@ const stats = [
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const config = useMemo(() => configManager.getConfig(), []);
   const [activeTab, setActiveTab] = useState("pending");
 
   return (
@@ -46,7 +62,7 @@ export default function AdminDashboard() {
             <CreditCard className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-lg font-bold leading-none">ArkPay Admin</h1>
+            <h1 className="text-lg font-bold leading-none">{config.app.name} Admin</h1>
             <p className="text-[10px] text-blue-300 font-medium tracking-wider uppercase">Kiosk Dashboard</p>
           </div>
         </div>
@@ -104,8 +120,11 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-xl p-4 border border-gray-100 mb-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-sm font-medium text-gray-900">Kiosk #001</p>
-                <p className="text-xs text-gray-400">Main Branch — Lobby</p>
+                <p className="text-sm font-medium text-gray-900">
+  {config.kiosk.id}
+</p><p className="text-xs text-gray-400">
+  {config.institution.branch} — {config.kiosk.location}
+</p>
               </div>
               <div className="flex items-center gap-1.5 bg-green-50 px-2.5 py-1 rounded-full">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
@@ -144,12 +163,37 @@ export default function AdminDashboard() {
           <h3 className="text-base font-bold text-gray-900 mb-3">Management Tools</h3>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "Emboss Upload",     icon: Upload,    path: "/admin/emboss"      },
-              { label: "Card Queue",        icon: List,      path: "/admin/queue"       },
-              { label: "Institution Setup", icon: Building2, path: "/admin/institution" },
-              { label: "Device Test",       icon: Wrench,    path: "/admin/devices"     },
-              { label: "Audit Logs",        icon: Shield,    path: "/admin/audit"       },
-            ].map(item => (
+  {
+    label: "Emboss Upload",
+    icon: Upload,
+    path: "/admin/emboss",
+  },
+  {
+    label: "Card Queue",
+    icon: List,
+    path: "/admin/queue",
+  },
+  {
+    label: "Institution Setup",
+    icon: Building2,
+    path: "/admin/institution",
+  },
+  {
+    label: "Device Test",
+    icon: Wrench,
+    path: "/admin/devices",
+  },
+  {
+    label: "Diagnostics",
+    icon: Activity,
+    path: "/admin/diagnostics",
+  },
+  {
+    label: "Audit Logs",
+    icon: Shield,
+    path: "/admin/audit",
+  },
+].map(item => (
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
